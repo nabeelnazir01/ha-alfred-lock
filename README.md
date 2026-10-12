@@ -1,7 +1,7 @@
 # Alfred Smart Lock - Home Assistant Integration
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz)
-[![GitHub Release](https://img.shields.io/github/v/release/nab6/ha-alfred-lock)](https://github.com/nab6/ha-alfred-lock/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/nabeelnazir01/ha-alfred-lock)](https://github.com/nabeelnazir01/ha-alfred-lock/releases)
 
 A custom integration for [Home Assistant](https://www.home-assistant.io/) to control and monitor **Alfred Smart Locks** via their cloud API (WiFi / Gateway bridge).
 
@@ -42,7 +42,7 @@ A custom integration for [Home Assistant](https://www.home-assistant.io/) to con
 
 ## Manual Installation
 
-1. Download the latest release from the [Releases](https://github.com/nab6/ha-alfred-lock/releases) tab.
+1. Download the latest release from the [Releases](https://github.com/nabeelnazir01/ha-alfred-lock/releases) tab.
 2. Copy the `custom_components/alfred_home` directory into your Home Assistant `<config>/custom_components/` folder.
    Your folder structure should look like this:
    ```text
