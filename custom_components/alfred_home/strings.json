@@ -1,0 +1,37 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Alfred Smart Lock",
+        "description": "Enter your Alfred Home account email and password to connect your door locks and Wi-Fi bridges.",
+        "data": {
+          "username": "Account Email",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to Alfred cloud services.",
+      "invalid_auth": "Invalid email or password. Please verify your credentials in the Alfred mobile app.",
+      "unknown": "Unexpected error occurred during authentication."
+    },
+    "abort": {
+      "already_configured": "This Alfred account is already configured in Home Assistant."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "door_sensor": {
+        "name": "Door"
+      },
+      "bridge_ble_link": {
+        "name": "Bridge BLE Link"
+      }
+    },
+    "sensor": {
+      "ble_signal": {
+        "name": "BLE Signal"
+      }
+    }
+  }
+}
