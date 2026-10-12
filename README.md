@@ -31,7 +31,7 @@ A custom integration for [Home Assistant](https://www.home-assistant.io/) to con
 3. Click the **three dots menu (⋮)** in the top right corner and select **Custom repositories**.
 4. In the Repository field, enter:
    ```text
-   https://github.com/nab6/ha-alfred-lock
+   https://github.com/nabeelnazir01/ha-alfred-lock
    ```
 5. Select category: **Integration**.
 6. Click **Add**.
