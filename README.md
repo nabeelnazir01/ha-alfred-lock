@@ -75,6 +75,9 @@ A custom integration for [Home Assistant](https://www.home-assistant.io/) to con
 
 ---
 
-## Disclaimer
+## Disclaimer & AI / Reverse Engineering Disclosure
 
-This is a community-developed integration and is not officially affiliated with or endorsed by Alfred Inc.
+- This is a community-developed integration and is not officially affiliated with or endorsed by Alfred Inc.
+- **Reverse Engineering**: The underlying API communication and protocol details were derived by reverse-engineering the official Alfred Android application using [REA](https://github.com/morluto/rea).
+- **AI-Assisted Development**: Portions of this codebase, protocol analysis, and documentation were developed and generated with the assistance of AI coding assistants.
+
