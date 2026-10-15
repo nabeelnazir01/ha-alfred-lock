@@ -43,7 +43,7 @@ A custom integration for [Home Assistant](https://www.home-assistant.io/) to con
 ## Manual Installation
 
 1. Download the latest release from the [Releases](https://github.com/nabeelnazir01/ha-alfred-lock/releases) tab.
-2. Copy the `custom_components/alfred_home` directory into your Home Assistant `<config>/custom_components/` folder.
+2. Copy the `alfred_home` directory into your Home Assistant `<config>/custom_components/` folder.
    Your folder structure should look like this:
    ```text
    config/
