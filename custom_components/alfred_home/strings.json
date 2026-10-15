@@ -29,6 +29,12 @@
       }
     },
     "sensor": {
+      "battery": {
+        "name": "Battery"
+      },
+      "last_unlocked_by": {
+        "name": "Last Unlocked By"
+      },
       "ble_signal": {
         "name": "BLE Signal"
       }

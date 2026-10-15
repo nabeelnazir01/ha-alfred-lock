@@ -35,7 +35,13 @@ async def async_setup_entry(
             lock_id = device["deviceId"]
             master_id = device.get("masterId")
 
-            entities.append(AlfredDoorSensor(coordinator, device, lock_id, master_id))
+            # Check if door sensor capability is supported by this lock hardware
+            lock_status = coordinator.data.get(lock_id, {}) if coordinator.data else {}
+            has_doorsensor = device.get("has_doorsensor") or lock_status.get("has_doorsensor", False)
+
+            if has_doorsensor:
+                entities.append(AlfredDoorSensor(coordinator, device, lock_id, master_id))
+
             entities.append(AlfredBleConnectivitySensor(coordinator, device, lock_id, master_id))
 
     async_add_entities(entities)
@@ -60,12 +66,25 @@ class AlfredDoorSensor(CoordinatorEntity[AlfredDataUpdateCoordinator], BinarySen
         self.lock_id = lock_id
         self._attr_unique_id = f"{DOMAIN}_{lock_id}_door_sensor"
         self._attr_name = "Door"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, lock_id)},
-            name=device.get("name", "Front Door"),
+        self.device = device
+        self.master_id = master_id
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return dynamic device information for this lock."""
+        status = self.coordinator.data.get(self.lock_id, {}) if self.coordinator.data else {}
+        model_name = status.get("model") or self.device.get("model") or "DB1 Touchscreen Smart Lock"
+        if not model_name.endswith("Smart Lock") and not "Lock" in model_name:
+            model_name = f"{model_name} Touchscreen Smart Lock"
+        sw_version = status.get("fw_version") or self.device.get("fw_version")
+
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.lock_id)},
+            name=self.device.get("name", "Front Door"),
             manufacturer="Alfred International",
-            model="DB2S Touchscreen Smart Lock",
-            via_device=(DOMAIN, master_id) if master_id else None,
+            model=model_name,
+            sw_version=sw_version,
+            via_device=(DOMAIN, self.master_id) if self.master_id else None,
         )
 
     @property
@@ -101,12 +120,25 @@ class AlfredBleConnectivitySensor(CoordinatorEntity[AlfredDataUpdateCoordinator]
         self.lock_id = lock_id
         self._attr_unique_id = f"{DOMAIN}_{lock_id}_ble_link"
         self._attr_name = "Bridge BLE Link"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, lock_id)},
-            name=device.get("name", "Front Door"),
+        self.device = device
+        self.master_id = master_id
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return dynamic device information for this lock."""
+        status = self.coordinator.data.get(self.lock_id, {}) if self.coordinator.data else {}
+        model_name = status.get("model") or self.device.get("model") or "DB1 Touchscreen Smart Lock"
+        if not model_name.endswith("Smart Lock") and not "Lock" in model_name:
+            model_name = f"{model_name} Touchscreen Smart Lock"
+        sw_version = status.get("fw_version") or self.device.get("fw_version")
+
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.lock_id)},
+            name=self.device.get("name", "Front Door"),
             manufacturer="Alfred International",
-            model="DB2S Touchscreen Smart Lock",
-            via_device=(DOMAIN, master_id) if master_id else None,
+            model=model_name,
+            sw_version=sw_version,
+            via_device=(DOMAIN, self.master_id) if self.master_id else None,
         )
 
     @property

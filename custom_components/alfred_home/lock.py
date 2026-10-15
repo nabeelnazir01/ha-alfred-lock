@@ -73,16 +73,26 @@ class AlfredLockEntity(CoordinatorEntity[AlfredDataUpdateCoordinator], LockEntit
         self.master_id = master_id
 
         self._attr_unique_id = f"{DOMAIN}_{self.lock_id}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.lock_id)},
-            name=device.get("name", "Front Door"),
-            manufacturer="Alfred International",
-            model="DB2S Touchscreen Smart Lock",
-            via_device=(DOMAIN, self.master_id) if self.master_id else None,
-        )
-
         self._is_locking = False
         self._is_unlocking = False
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return dynamic device information for this lock."""
+        status = self.coordinator.data.get(self.lock_id, {}) if self.coordinator.data else {}
+        model_name = status.get("model") or self.device.get("model") or "DB1 Touchscreen Smart Lock"
+        if not model_name.endswith("Smart Lock") and not "Lock" in model_name:
+            model_name = f"{model_name} Touchscreen Smart Lock"
+        sw_version = status.get("fw_version") or self.device.get("fw_version")
+
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.lock_id)},
+            name=self.device.get("name", "Front Door"),
+            manufacturer="Alfred International",
+            model=model_name,
+            sw_version=sw_version,
+            via_device=(DOMAIN, self.master_id) if self.master_id else None,
+        )
 
     @property
     def is_locked(self) -> bool:
@@ -121,6 +131,8 @@ class AlfredLockEntity(CoordinatorEntity[AlfredDataUpdateCoordinator], LockEntit
             "lock_ble_connected": status.get("lock_online", False),
             "ble_signal_dbm": status.get("ble_signal"),
             "door_sensor_open": status.get("door_sensor_open", False),
+            "last_unlocked_by": status.get("last_unlocked_by"),
+            "registered_user_profiles": status.get("pin_users"),
             "malfunction": status.get("malfunction", False),
         }
 

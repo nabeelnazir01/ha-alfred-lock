@@ -335,6 +335,62 @@ class AlfredApiClient:
             "malfunction": lock_val.get("malfunction", 0) != 0,
         }
 
+    async def get_lock_detail(self, lock_id: str) -> dict[str, Any]:
+        """Fetch lock detailed configuration and hardware state including battery level."""
+        req_data = {
+            "devs": [
+                {
+                    "deviceid": lock_id,
+                    "isshare": 0,
+                }
+            ]
+        }
+        res = await self._request(f"{LOCK_SERVER}/v3/dev/detail", req_data)
+        result = res.get("result") or []
+        if isinstance(result, list) and len(result) > 0:
+            lock_item = result[0]
+            extend = lock_item.get("extend") or {}
+            ability = lock_item.get("ability") or {}
+            # extend.doorsensor is -1 when unsupported
+            # ability may specify doorsensor capability if equipped
+            doorsensor_supported = extend.get("doorsensor", -1) != -1 or bool(ability.get("doorsensor", {}).get("enable", 0))
+
+            return {
+                "mongodb_id": lock_item.get("_id"),
+                "battery": extend.get("battery"),
+                "battery_time": extend.get("batterytime"),
+                "model": lock_item.get("mode") or "DB1",
+                "fw_version": extend.get("fwversion") or extend.get("softversion"),
+                "has_doorsensor": doorsensor_supported,
+                "raw_extend": extend,
+            }
+        return {}
+
+    async def get_lock_keypersons(self, mongo_did: str) -> list[dict[str, Any]]:
+        """Fetch registered PIN user profiles (KeyPersons) for the lock."""
+        try:
+            res = await self._request(f"{LOCK_SERVER}/v1/dev/keyperson", {"did": mongo_did})
+            result = res.get("result") or {}
+            keypersons = result.get("keypersons") or []
+            return keypersons
+        except Exception as err:
+            _LOGGER.debug("Could not fetch keypersons for did %s: %s", mongo_did, err)
+            return []
+
+    async def get_lock_activity_logs(self, mongo_did: str, limit: int = 20) -> list[dict[str, Any]]:
+        """Fetch recent lock event logs from the cloud."""
+        try:
+            res = await self._request(
+                f"{LOCK_SERVER}/v1/dev/showlog",
+                {"did": mongo_did, "limit": limit, "page": 1},
+            )
+            result = res.get("result") or {}
+            logs = result.get("logs") or []
+            return logs
+        except Exception as err:
+            _LOGGER.debug("Could not fetch activity logs for did %s: %s", mongo_did, err)
+            return []
+
     async def operate_lock(self, lock_id: str, bridge_id: str, lock: bool) -> bool:
         """Lock or unlock the door through the Wi-Fi bridge."""
         # 1. Access Check (/v1/dev/access)
